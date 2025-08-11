@@ -134,7 +134,7 @@ export class PriceScraper {
         for (const script of jsonLdScripts) {
           try {
             const jsonData = JSON.parse(script.textContent || '')
-            const product = findProductInJsonLd(jsonData)
+            const product = PriceScraper.findProductInJsonLd(jsonData)
             if (product && product.price) {
               price = parseFloat(product.price)
               if (product.currency) {
@@ -261,12 +261,12 @@ export class PriceScraper {
           try {
             const jsonData = JSON.parse(script.textContent || '')
             // Check for Product schema type directly in browser
-            function findProductInBrowser(data) {
+            function findProductInBrowser(data: any): any {
               if (!data) return null
               
               if (Array.isArray(data)) {
                 for (const item of data) {
-                  const result = findProductInBrowser(item)
+                  const result: any = findProductInBrowser(item)
                   if (result) return result
                 }
                 return null
@@ -282,7 +282,7 @@ export class PriceScraper {
               
               for (const key in data) {
                 if (typeof data[key] === 'object' && data[key] !== null) {
-                  const result = findProductInBrowser(data[key])
+                  const result: any = findProductInBrowser(data[key])
                   if (result) return result
                 }
               }
@@ -610,7 +610,7 @@ export class PriceScraper {
   /**
    * Extract product information from JSON-LD structured data
    */
-  private static findProductInJsonLd(jsonData: any): {price?: string, currency?: string, name?: string} | null {
+  private static findProductInJsonLd(jsonData: any): {price?: string, currency?: string, name?: string, offers?: any} | null {
     if (!jsonData) return null
     
     // Handle arrays of JSON-LD objects
@@ -633,7 +633,8 @@ export class PriceScraper {
             return {
               price: offer.price || offer.lowPrice,
               currency: offer.priceCurrency || 'AUD',
-              name: jsonData.name
+              name: jsonData.name,
+              offers: offers
             }
           }
         }
@@ -644,7 +645,8 @@ export class PriceScraper {
         return {
           price: jsonData.price,
           currency: jsonData.priceCurrency || 'AUD',
-          name: jsonData.name
+          name: jsonData.name,
+          offers: jsonData.offers
         }
       }
     }

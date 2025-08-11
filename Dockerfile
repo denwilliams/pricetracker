@@ -8,10 +8,10 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY client/package*.json ./client/
-
 # Install dependencies
 RUN npm ci --omit=dev
+
+COPY client/package*.json ./client/
 RUN cd client && npm ci
 
 # Build the application
@@ -33,13 +33,13 @@ WORKDIR /app
 
 # Install runtime dependencies
 RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    dumb-init
+  chromium \
+  nss \
+  freetype \
+  harfbuzz \
+  ca-certificates \
+  ttf-freefont \
+  dumb-init
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs

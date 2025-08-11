@@ -210,7 +210,7 @@ export function PriceChart({ productId, targetPrice, onClose }: PriceChartProps)
               tickFormatter={(value) => `$${value}`}
             />
             <Tooltip 
-              formatter={(value: any, name: string) => [`$${value.toFixed(2)}`, 'Price']}
+              formatter={(value: any, _name: string) => [`$${value.toFixed(2)}`, 'Price']}
               labelFormatter={(label, payload) => {
                 if (payload && payload[0]) {
                   return payload[0].payload.time
