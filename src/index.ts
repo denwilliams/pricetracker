@@ -77,7 +77,21 @@ setTimeout(async () => {
     console.log('🔄 Running database migrations...')
     const { migrate } = await import('drizzle-orm/postgres-js/migrator')
     const { db } = await import('./db/connection.js')
-    await migrate(db, { migrationsFolder: './drizzle' })
+    const fs = await import('fs')
+    const path = await import('path')
+    
+    const migrationsPath = path.resolve(process.cwd(), 'drizzle')
+    console.log('Looking for migrations in:', migrationsPath)
+    
+    if (!fs.existsSync(migrationsPath)) {
+      console.error('Migrations folder does not exist at:', migrationsPath)
+      return
+    }
+    
+    const files = fs.readdirSync(migrationsPath)
+    console.log('Files in migrations folder:', files)
+    
+    await migrate(db, { migrationsFolder: migrationsPath })
     console.log('✅ Database migrations completed')
     
     console.log('🕐 Starting price monitoring scheduler...')
