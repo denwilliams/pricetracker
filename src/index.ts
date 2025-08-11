@@ -34,7 +34,7 @@ app.route('/api/notifications', notificationsRoute)
 app.route('/api/system', systemRoute)
 
 // Serve static files from client/dist
-app.use('/assets/*', serveStatic({ root: './client/dist/assets' }))
+app.use('/assets/*', serveStatic({ root: './client/dist' }))
 app.use('/vite.svg', serveStatic({ path: './client/dist/vite.svg' }))
 
 // Serve index.html for all non-API routes (SPA routing)
