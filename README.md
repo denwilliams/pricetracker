@@ -134,7 +134,26 @@ npm run db:studio    # Open database GUI
 
 ## Deployment
 
-### Docker
+### GitHub Container Registry
+
+Pre-built Docker images are automatically published to GitHub Container Registry:
+
+```bash
+# Pull the latest image
+docker pull ghcr.io/username/pricetracker:latest
+
+# Run with environment file
+docker run -p 3001:3001 --env-file .env ghcr.io/username/pricetracker:latest
+
+# Or run with environment variables
+docker run -p 3001:3001 \
+  -e DATABASE_URL=postgresql://user:pass@host:5432/db \
+  -e PUSHOVER_TOKEN=your_token \
+  -e PUSHOVER_USER=your_user \
+  ghcr.io/username/pricetracker:latest
+```
+
+### Local Docker Build
 
 ```bash
 npm run docker:build
@@ -147,5 +166,13 @@ npm run docker:run
 npm run build
 npm start
 ```
+
+### CI/CD Pipeline
+
+The project includes GitHub Actions workflows:
+
+- **CI Pipeline**: Runs tests, security checks, and builds on every push
+- **Docker Publishing**: Automatically builds and publishes Docker images to GHCR
+- **Release**: Creates GitHub releases with Docker image information for tagged versions
 
 See deployment scripts in `scripts/` directory for automated deployment options.
