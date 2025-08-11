@@ -71,14 +71,20 @@ serve({
 
 console.log(`✅ Price Tracker API listening on http://localhost:${port}`)
 
-// Start the price monitoring scheduler
+// Run database migrations and start scheduler
 setTimeout(async () => {
   try {
+    console.log('🔄 Running database migrations...')
+    const { migrate } = await import('drizzle-orm/postgres-js/migrator')
+    const { db } = await import('./db/connection.js')
+    await migrate(db, { migrationsFolder: './drizzle' })
+    console.log('✅ Database migrations completed')
+    
     console.log('🕐 Starting price monitoring scheduler...')
     await PriceMonitorScheduler.startAllJobs()
     console.log('✅ Price monitoring scheduler started')
   } catch (error) {
-    console.error('❌ Failed to start scheduler:', error)
+    console.error('❌ Failed to start services:', error)
   }
 }, 2000) // Wait 2 seconds for server to start
 
