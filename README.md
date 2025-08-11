@@ -30,7 +30,7 @@ A comprehensive price tracking application similar to CamelCamelCamel but design
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - PostgreSQL database
 - Pushover account (for notifications)
 
