@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
+import { serveStatic } from '@hono/node-server/serve-static'
 import { serve } from '@hono/node-server'
 import { PriceMonitorScheduler } from './services/scheduler.js'
 
@@ -16,7 +17,7 @@ const app = new Hono()
 // Middleware
 app.use('*', logger())
 app.use('*', cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:3001'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowHeaders: ['Content-Type', 'Authorization'],
 }))
@@ -32,21 +33,12 @@ app.route('/api/stores', storesRoute)
 app.route('/api/notifications', notificationsRoute)
 app.route('/api/system', systemRoute)
 
-// Root endpoint
-app.get('/', (c) => {
-  return c.json({
-    message: '🔍 Price Tracker API',
-    version: '1.0.0',
-    endpoints: {
-      products: '/api/products',
-      stores: '/api/stores',
-      notifications: '/api/notifications',
-      system: '/api/system',
-      health: '/health'
-    },
-    timestamp: new Date().toISOString()
-  })
-})
+// Serve static files from client/dist
+app.use('/assets/*', serveStatic({ root: './client/dist/assets' }))
+app.use('/vite.svg', serveStatic({ path: './client/dist/vite.svg' }))
+
+// Serve index.html for all non-API routes (SPA routing)
+app.get('*', serveStatic({ path: './client/dist/index.html' }))
 
 // 404 handler
 app.notFound((c) => {
