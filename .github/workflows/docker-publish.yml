@@ -49,13 +49,39 @@ jobs:
             type=semver,pattern={{major}}
             type=sha
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image (Full)
         uses: docker/build-push-action@v5
         with:
           context: .
+          target: full
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=min
+
+      - name: Extract metadata (Lite)
+        id: meta-lite
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch,suffix=-lite
+            type=ref,event=pr,suffix=-lite
+            type=semver,pattern={{version}},suffix=-lite
+            type=semver,pattern={{major}}.{{minor}},suffix=-lite
+            type=semver,pattern={{major}},suffix=-lite
+            type=sha,suffix=-lite
+
+      - name: Build and push Docker image (Lite)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: lite
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-lite.outputs.tags }}
+          labels: ${{ steps.meta-lite.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=min

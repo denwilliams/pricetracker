@@ -1,4 +1,17 @@
-import puppeteer, { Browser, Page } from 'puppeteer'
+// Dynamic import for optional Puppeteer
+let puppeteerModule: any = null
+
+async function loadPuppeteer() {
+  if (puppeteerModule === null) {
+    try {
+      puppeteerModule = await import('puppeteer')
+    } catch (error) {
+      console.warn('⚠️  Puppeteer not installed - falling back to Cheerio only')
+      puppeteerModule = false
+    }
+  }
+  return puppeteerModule
+}
 import * as cheerio from 'cheerio'
 import axios from 'axios'
 import { URLParser } from './url-parser.js'
@@ -13,14 +26,18 @@ export interface ScrapeResult {
 }
 
 export class PriceScraper {
-  private static browser: Browser | null = null
+  private static browser: any | null = null
   
   /**
-   * Get or create a shared browser instance
+   * Get or create a shared browser instance (only if Puppeteer is available)
    */
-  private static async getBrowser(): Promise<Browser> {
+  private static async getBrowser(): Promise<any> {
+    const puppeteer = await loadPuppeteer()
+    if (!puppeteer) {
+      throw new Error('Puppeteer not available')
+    }
     if (!this.browser) {
-      this.browser = await puppeteer.launch({
+      this.browser = await puppeteer.default.launch({
         headless: true,
         args: [
           '--no-sandbox',
@@ -52,11 +69,17 @@ export class PriceScraper {
     // Since we now support all stores with fallback scraping, always proceed
     console.log(`Scraping ${parsed.store} (${parsed.domain})${customSelector ? ' with custom selector' : ''}`)
     
-    // Try different scraping methods based on the site
-    const methods = [
-      () => this.scrapeWithPuppeteer(parsed.cleanUrl, customSelector, parsed.domain),
-      () => this.scrapeWithCheerio(parsed.cleanUrl, customSelector, parsed.domain)
-    ]
+    // Try different scraping methods based on availability
+    const methods = []
+    
+    // Only add Puppeteer method if available
+    const puppeteer = await loadPuppeteer()
+    if (puppeteer) {
+      methods.push(() => this.scrapeWithPuppeteer(parsed.cleanUrl, customSelector, parsed.domain))
+    }
+    
+    // Always add Cheerio as fallback
+    methods.push(() => this.scrapeWithCheerio(parsed.cleanUrl, customSelector, parsed.domain))
     
     for (const method of methods) {
       try {
