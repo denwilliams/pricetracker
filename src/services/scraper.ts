@@ -144,7 +144,7 @@ export class PriceScraper {
         console.log(`Selector ${selector} not found, continuing with best-effort extraction`)
       }
       
-      const result = await page.evaluate((sel, dom) => {
+      const result = await page.evaluate((sel: string, dom: string) => {
         const priceElements = document.querySelectorAll(sel)
         let price: number | null = null
         let productName: string | undefined
