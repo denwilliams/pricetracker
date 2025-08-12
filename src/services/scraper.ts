@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio'
 import axios from 'axios'
-import { URLParser } from './url-parser'
+import { URLParser } from './url-parser.js'
 
 // Dynamic import for optional Puppeteer
 let puppeteerCache: any = null
