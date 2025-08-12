@@ -106,7 +106,7 @@ coverage/
 
 # Backups
 backups/
-*.sql
+# *.sql
 *.sql.gz
 
 # SSL certificates
