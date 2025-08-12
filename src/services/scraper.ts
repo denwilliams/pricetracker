@@ -1,7 +1,11 @@
+import * as cheerio from 'cheerio'
+import axios from 'axios'
+import { URLParser } from './url-parser.js'
+
 // Dynamic import for optional Puppeteer
 let puppeteerCache: any = null
 
-async function loadPuppeteer() {
+async function loadPuppeteer(): Promise<any> {
   if (puppeteerCache === null) {
     try {
       puppeteerCache = await import('puppeteer')
@@ -12,9 +16,6 @@ async function loadPuppeteer() {
   }
   return puppeteerCache === false ? null : puppeteerCache
 }
-import * as cheerio from 'cheerio'
-import axios from 'axios'
-import { URLParser } from './url-parser.js'
 
 export interface ScrapeResult {
   price: number | null
