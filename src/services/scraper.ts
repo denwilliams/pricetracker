@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio'
 import axios from 'axios'
-import { URLParser } from './url-parser.js'
+import { URLParser } from './url-parser'
 
 // Dynamic import for optional Puppeteer
 let puppeteerCache: any = null
@@ -703,7 +703,8 @@ export class PriceScraper {
       'jbhifi.com.au': '.price, .current-price',
       'harveynorman.com.au': '.price, .product-price',
       'woolworths.com.au': '.price, .shelfProductTile-price',
-      'coles.com.au': '.price, .product-price'
+      'coles.com.au': '.price, .product-price',
+      'gamesmen.com.au': '.price, .text-3xl, .text-4xl'
     }
     
     // Enhanced fallback selectors for unknown stores
