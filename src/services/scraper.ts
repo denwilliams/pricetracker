@@ -1,16 +1,16 @@
 // Dynamic import for optional Puppeteer
-let puppeteerModule: any = null
+let puppeteerCache: any = null
 
 async function loadPuppeteer() {
-  if (puppeteerModule === null) {
+  if (puppeteerCache === null) {
     try {
-      puppeteerModule = await import('puppeteer')
+      puppeteerCache = await import('puppeteer')
     } catch (error) {
       console.warn('⚠️  Puppeteer not installed - falling back to Cheerio only')
-      puppeteerModule = false
+      puppeteerCache = false
     }
   }
-  return puppeteerModule
+  return puppeteerCache === false ? null : puppeteerCache
 }
 import * as cheerio from 'cheerio'
 import axios from 'axios'
